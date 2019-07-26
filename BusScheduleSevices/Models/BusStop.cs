@@ -8,6 +8,6 @@ namespace BusScheduleSevices.Models
     {
         public int StopNumber { get; set; }
         public string StopName { get; set; }
-        public Dictionary<string, List<string>> StopSchedule { get; set; }
+        public Dictionary<BusRoute, List<string>> StopSchedule { get; set; }
     }
 }

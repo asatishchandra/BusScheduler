@@ -1,40 +1,33 @@
-﻿using BusScheduleSevices.Models;
+﻿using BusScheduleSevices.Interfaces;
+using BusScheduleSevices.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace BusScheduleSevices.Services
 {
-    public class BusScheduleService
+    public class BusScheduleService : IBusScheduleService
     {
         private readonly int _routeCount = 3;
         private readonly int _stopCount = 10;
         private readonly int _distance = 2;
         private readonly int _serviceGap = 15;
-        private DateTime _startTime = DateTime.Today;
-
-
-        //public List<BusRoute> BusRoutes;
-        //public List<BusStop> BusStops;
-
-        //public BusRoute busroute;
-        //public BusStop  busStop;
-
+        
         public BusScheduleService()
         {
-            //_startTime = DateTime.Today;
-            //BusRoutes = InitializeRoutes();
-            //BusStops = InitializeStops();
+            
         }
 
         public List<BusStop> GetAllStopRouteData()
         {
             List<BusRoute> busRoutes = InitializeRoutes();
             List<BusStop> busStops = InitializeBusStops();
+            DateTime startTime = DateTime.Today;
 
             foreach (BusStop stop in busStops)
             {
-                stop.StopSchedule = GetFullRouteSchduleByStop(busRoutes);
+                stop.StopSchedule = GetFullRouteSchduleByStop(busRoutes, startTime);
+                startTime = startTime.AddMinutes(_distance);
             }
             return busStops;
         }
@@ -51,9 +44,6 @@ namespace BusScheduleSevices.Services
                 startTime = startTime.AddMinutes(_serviceGap);
             }
             double startMinute = (startTime - userCurrentTime).TotalMinutes;
-            //startTime = DateTime.Today.Add(TimeSpan.Parse(string.Format("{0}:{1}", userCurrentTime.Hour, startMinute)));
-
-            //var t = InitializeRoutesToStops(InitializeRoutes(), startTime);
 
             foreach (BusStop stop in busStops)
             {
@@ -65,7 +55,6 @@ namespace BusScheduleSevices.Services
             }
             return busStops;
         }
-
 
         #region private methods
         private List<BusRoute> InitializeRoutes()
@@ -90,22 +79,21 @@ namespace BusScheduleSevices.Services
             return busStops;
         }
 
-        private Dictionary<string, List<string>> GetFullRouteSchduleByStop(List<BusRoute> busRoutes)
+        private Dictionary<BusRoute, List<string>> GetFullRouteSchduleByStop(List<BusRoute> busRoutes, DateTime startTime)
         {
             DateTime ts;
             int counter = 0;
-            Dictionary<string, List<string>> schedule = new Dictionary<string, List<string>>();
+            Dictionary<BusRoute, List<string>> schedule = new Dictionary<BusRoute, List<string>>();
             foreach (BusRoute route in busRoutes)
             {
-                ts = _startTime.AddMinutes(counter);
-                schedule.Add(route.RouteName, GetRouteTime(ts));
+                ts = startTime.AddMinutes(counter);
+                schedule.Add(route, GetFullRouteTime(ts));
                 counter += _distance;
             }
-            _startTime = _startTime.AddMinutes(_distance);
             return schedule;
         }
 
-        private List<string> GetRouteTime(DateTime startTime)
+        private List<string> GetFullRouteTime(DateTime startTime)
         {
             List<string> timings = new List<string>();
             for (int i = 0; i < 96; i++)
@@ -116,12 +104,12 @@ namespace BusScheduleSevices.Services
             return timings;
         }
 
-        private Dictionary<string, List<string>> GetNextTwoRouteSchduleByTime(List<BusRoute> busRoutes, double startMinute)
+        private Dictionary<BusRoute, List<string>> GetNextTwoRouteSchduleByTime(List<BusRoute> busRoutes, double startMinute)
         {
-            Dictionary<string, List<string>> schedule = new Dictionary<string, List<string>>();
+            Dictionary<BusRoute, List<string>> schedule = new Dictionary<BusRoute, List<string>>();
             foreach (BusRoute route in busRoutes)
             {
-                schedule.Add(route.RouteName, new List<string> { startMinute.ToString(), (startMinute + _serviceGap).ToString() });
+                schedule.Add(route, new List<string> { startMinute.ToString(), (startMinute + _serviceGap).ToString() });
                 if (startMinute + _distance > _serviceGap)
                     startMinute = startMinute + _distance - _serviceGap;
                 else
@@ -129,6 +117,7 @@ namespace BusScheduleSevices.Services
             }
             return schedule;
         }
+
         #endregion
 
     }

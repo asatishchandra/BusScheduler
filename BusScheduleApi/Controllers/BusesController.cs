@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BusScheduleApi.DTO;
+using BusScheduleSevices.Interfaces;
 using BusScheduleSevices.Models;
 using BusScheduleSevices.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,22 +14,31 @@ namespace BusScheduleApi.Controllers
     [ApiController]
     public class BusesController : ControllerBase
     {
-        public BusScheduleService busScheduleService;
+        public IBusScheduleService BusScheduleService { get; }
 
         public BusesController()
         {
-            busScheduleService = new BusScheduleService();
+            BusScheduleService = new BusScheduleService();
         }
+        //public BusesController(IBusScheduleService busScheduleService)
+        //{
+        //    BusScheduleService = new BusScheduleService();
+        //}
         // GET api/busues
         [HttpGet]
         public ActionResult<IEnumerable<BusStopRouteDto>> Get()
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = busScheduleService.GetAllStopRouteData();
-
-            foreach (var stop in busStopsAndRoutes)
+            List<BusStop> busStopsAndRoutes = BusScheduleService.GetAllStopRouteData();
+            
+            foreach (BusStop stop in busStopsAndRoutes)
             {
-                dto.Add(new BusStopRouteDto { BusStop = stop.StopName, BusRoutes = stop.StopSchedule });
+                List<BusRouteDto> busRoutes = new List<BusRouteDto>();
+                foreach (KeyValuePair<BusRoute, List<string>> route in stop.StopSchedule)
+                {
+                    busRoutes.Add(new BusRouteDto { RouteName = route.Key.RouteName, Schedule = route.Value });
+                }
+                dto.Add(new BusStopRouteDto { BusStop = stop.StopName, BusRoutes = busRoutes });
             }
             return dto;
         }
@@ -38,13 +48,34 @@ namespace BusScheduleApi.Controllers
         public ActionResult<IEnumerable<BusStopRouteDto>> Get(string time)
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = busScheduleService.GetNextTwoBusArrivalDataByTime(time);
+            List<BusStop> busStopsAndRoutes = BusScheduleService.GetNextTwoBusArrivalDataByTime(time);
 
-            foreach (var stop in busStopsAndRoutes)
+            foreach (BusStop stop in busStopsAndRoutes)
             {
-                dto.Add(new BusStopRouteDto { BusStop = stop.StopName, BusRoutes = stop.StopSchedule });
+                List<BusRouteDto> busRoutes = new List<BusRouteDto>();
+                foreach (KeyValuePair<BusRoute, List<string>> route in stop.StopSchedule)
+                {
+                    busRoutes.Add(new BusRouteDto { RouteName = route.Key.RouteName, Schedule = route.Value });
+                }
+                dto.Add(new BusStopRouteDto { BusStop = stop.StopName, BusRoutes = busRoutes });
             }
             return dto;
+        }
+
+        // GET api/buses/1/3:01
+        [HttpGet("{stopId}/{time}")]
+        public ActionResult<BusStopRouteDto> Get(int stopId, string time)
+        {
+            List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
+            List<BusStop> busStopsAndRoutes = BusScheduleService.GetNextTwoBusArrivalDataByTime(time);
+            BusStop requestedStop = busStopsAndRoutes.Where(e => e.StopNumber == stopId).FirstOrDefault();
+
+            List<BusRouteDto> busRoutes = new List<BusRouteDto>();
+            foreach (KeyValuePair<BusRoute, List<string>> route in requestedStop.StopSchedule)
+            {
+                busRoutes.Add(new BusRouteDto { RouteName = route.Key.RouteName, Schedule = route.Value });
+            }
+            return new BusStopRouteDto { BusStop = requestedStop.StopName, BusRoutes = busRoutes };
         }
 
         // POST api/values
