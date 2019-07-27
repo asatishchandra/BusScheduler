@@ -6,6 +6,7 @@ using BusScheduleApi.DTO;
 using BusScheduleSevices.Interfaces;
 using BusScheduleSevices.Models;
 using BusScheduleSevices.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusScheduleApi.Controllers
@@ -15,17 +16,14 @@ namespace BusScheduleApi.Controllers
     public class BusesController : ControllerBase
     {
         public IBusScheduleService BusScheduleService { get; }
-
-        public BusesController()
+        public BusesController(IBusScheduleService busScheduleService)
         {
-            BusScheduleService = new BusScheduleService();
+            BusScheduleService = busScheduleService;
         }
-        //public BusesController(IBusScheduleService busScheduleService)
-        //{
-        //    BusScheduleService = new BusScheduleService();
-        //}
+
         // GET api/busues
         [HttpGet]
+        [EnableCors("EnableCORS")]
         public ActionResult<IEnumerable<BusStopRouteDto>> Get()
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
@@ -45,6 +43,7 @@ namespace BusScheduleApi.Controllers
 
         // GET api/buses/3:01
         [HttpGet("{time}")]
+        [EnableCors("EnableCORS")]
         public ActionResult<IEnumerable<BusStopRouteDto>> Get(string time)
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
@@ -64,6 +63,7 @@ namespace BusScheduleApi.Controllers
 
         // GET api/buses/1/3:01
         [HttpGet("{stopId}/{time}")]
+        [EnableCors("EnableCORS")]
         public ActionResult<BusStopRouteDto> Get(int stopId, string time)
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
@@ -78,19 +78,19 @@ namespace BusScheduleApi.Controllers
             return new BusStopRouteDto { BusStop = requestedStop.StopName, BusRoutes = busRoutes };
         }
 
-        // POST api/values
+        // POST api/buses
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/values/5
+        // PUT api/buses/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/values/5
+        // DELETE api/buses/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

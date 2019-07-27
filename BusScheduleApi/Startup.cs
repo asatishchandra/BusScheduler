@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusScheduleApi.Hubs;
+using BusScheduleSevices.Interfaces;
+using BusScheduleSevices.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +23,24 @@ namespace BusScheduleApi
         }
 
         public IConfiguration Configuration { get; }
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // Enable CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCORS", builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build();
+                });
+            });
+
+            services.AddSignalR();
+
+            services.AddScoped<IBusScheduleService, BusScheduleService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,6 +51,8 @@ namespace BusScheduleApi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("EnableCORS");
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -42,6 +60,11 @@ namespace BusScheduleApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<RunningBusScheduleHub>("/schedule");
             });
         }
     }
