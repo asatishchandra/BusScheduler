@@ -45,11 +45,7 @@ export class FetchData extends Component {
 
       return (
           <div>
-              <WebSocketHttp url="http://localhost:62673/api/buses/3:01"
-                  senderPath="/3:01"
-                  listenerPath="/3:01"
-                  onMessage={(message) => this.onMessage(message)}
-                  ref={WebSocketHttp => { this.refWebSocketHttp = WebSocketHttp }} />
+              <WebSocketHttp url="http://localhost:62673/api/buses/3:01" />
             <h1>Weather forecast</h1>
             <p>This component demonstrates fetching data from the server.</p>
             {contents}
@@ -73,4 +69,9 @@ export class FetchData extends Component {
     }
 }
 //const response = await fetch('https://localhost:44305/api/Buses/1/3:01');
+//<WebSocketHttp url="http://localhost:62673"
+//    senderPath="/api/buses/3:01"
+//    listenerPath="/api/buses/3:01"
+//    onMessage={(message) => this.onMessage(message)}
+//    ref={WebSocketHttp => { this.refWebSocketHttp = WebSocketHttp }} />
 

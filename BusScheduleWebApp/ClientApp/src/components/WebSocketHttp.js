@@ -7,6 +7,7 @@ class WebSocketHttp extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log(this.props.url);
         let socket = new SockJS(this.props.url);
         let stompClient = Stomp.over(socket);
         this.state = {
@@ -16,30 +17,47 @@ class WebSocketHttp extends React.Component {
     }
 
     componentDidMount() {
-        let stompClient = this.state.stompClient;
-
-        if (this.props.listenerPath !== undefined) {
+        let sock = this.state.socket;
+        sock.onopen = function () {
             debugger;
-            stompClient.connect({}, (frame) => {
-                console.log('WebSocketHttp Connected: ' + frame);
-                debugger;
-                stompClient.subscribe(this.props.listenerPath, (message) => this.props.onMessage(message));
-            });
-        }
+            console.log('open');
+            sock.send('test');
+        };
 
-        stompClient.onclose = () => {
-            console.log('WebSocketHttp disconnected');
-            if (typeof this.props.onClose === 'function')
-                this.props.onClose();
-        }
+        sock.onmessage = function (e) {
+            debugger;
+            console.log('message', e.data);
+            sock.close();
+        };
+
+        sock.onclose = function () {
+            debugger;
+            console.log('close');
+        };
+        //let stompClient = this.state.stompClient;
+
+        //if (this.props.listenerPath !== undefined) {
+        //    debugger;
+        //    stompClient.connect({}, (frame) => {
+        //        console.log('WebSocketHttp Connected: ' + frame);
+        //        debugger;
+        //        stompClient.subscribe(this.props.listenerPath, (message) => this.props.onMessage(message));
+        //    });
+        //}
+
+        //stompClient.onclose = () => {
+        //    console.log('WebSocketHttp disconnected');
+        //    if (typeof this.props.onClose === 'function')
+        //        this.props.onClose();
+        //}
     }
 
-    sendMessage(message) {
-        if (this.props.senderPath !== undefined) {
-            let message = "Hello from client";
-            this.state.stompClient.send(this.props.senderPath, {}, message);
-        }
-    }
+    //sendMessage(message) {
+    //    if (this.props.senderPath !== undefined) {
+    //        let message = "Hello from client";
+    //        this.state.stompClient.send(this.props.senderPath, {}, message);
+    //    }
+    //}
 
     componentWillUnmount() {
         let socket = this.state.socket;
@@ -55,10 +73,10 @@ class WebSocketHttp extends React.Component {
 
 WebSocketHttp.propTypes = {
     url: PropTypes.string.isRequired,
-    senderPath: PropTypes.string.isRequired,
-    listenerPath: PropTypes.string.isRequired,
-    onMessage: PropTypes.func.isRequired,
-    onClose: PropTypes.func
+    //senderPath: PropTypes.string.isRequired,
+    //listenerPath: PropTypes.string.isRequired,
+    //onMessage: PropTypes.func.isRequired,
+    //onClose: PropTypes.func
 };
 
 WebSocketHttp.defaultProps = {

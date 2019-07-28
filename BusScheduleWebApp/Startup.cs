@@ -1,3 +1,6 @@
+using BusScheduleWebApp.SocketManager;
+using BusScheduleSevices.Interfaces;
+using BusScheduleSevices.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -19,6 +22,8 @@ namespace BusScheduleWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IBusScheduleService, BusScheduleService>();
+            services.AddSingleton<ScheduleSocketManager>();
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
             // In production, the React files will be served from this directory
@@ -59,6 +64,8 @@ namespace BusScheduleWebApp
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            app.UseWebSockets();
         }
     }
 }
