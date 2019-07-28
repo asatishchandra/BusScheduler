@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using BusScheduleApi.DTO;
+using BusScheduleApi.SocketManager;
 using BusScheduleSevices.Interfaces;
 using BusScheduleSevices.Models;
 using BusScheduleSevices.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BusScheduleApi.Controllers
 {
@@ -15,10 +19,13 @@ namespace BusScheduleApi.Controllers
     [ApiController]
     public class BusesController : ControllerBase
     {
-        public IBusScheduleService BusScheduleService { get; }
-        public BusesController(IBusScheduleService busScheduleService)
+        private IBusScheduleService _busScheduleService { get; }
+        private readonly ScheduleSocketManager _socketManager;
+        private List<BusStopRouteDto> _dto;
+        public BusesController(IBusScheduleService busScheduleService, ScheduleSocketManager socketManager)
         {
-            BusScheduleService = busScheduleService;
+            _busScheduleService = busScheduleService;
+            _socketManager = socketManager;
         }
 
         // GET api/busues
@@ -27,7 +34,7 @@ namespace BusScheduleApi.Controllers
         public ActionResult<IEnumerable<BusStopRouteDto>> Get()
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = BusScheduleService.GetAllStopRouteData();
+            List<BusStop> busStopsAndRoutes = _busScheduleService.GetAllStopRouteData();
             
             foreach (BusStop stop in busStopsAndRoutes)
             {
@@ -44,10 +51,32 @@ namespace BusScheduleApi.Controllers
         // GET api/buses/3:01
         [HttpGet("{time}")]
         [EnableCors("EnableCORS")]
-        public ActionResult<IEnumerable<BusStopRouteDto>> Get(string time)
+        public async Task<IActionResult> Get(string time)
         {
+            try
+            {
+                Timer timer = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds)
+                {
+                    AutoReset = true
+                };
+                timer.Elapsed += new ElapsedEventHandler(GetDto);
+                timer.Start();
+                _dto = GetDto();
+                await _socketManager.SendMessageToAllAsync(JsonConvert.SerializeObject(_dto));
+                return Ok();
+            }
+            catch (Exception ex) {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        private void GetDto(object sender, ElapsedEventArgs e)
+        {
+            _dto = GetDto();
+        }
+        private List<BusStopRouteDto> GetDto() {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = BusScheduleService.GetNextTwoBusArrivalDataByTime(time);
+            string timeNow = DateTime.Now.ToString("HH:mm");
+            List<BusStop> busStopsAndRoutes = _busScheduleService.GetNextTwoBusArrivalDataByTime(timeNow);
 
             foreach (BusStop stop in busStopsAndRoutes)
             {
@@ -67,7 +96,7 @@ namespace BusScheduleApi.Controllers
         public ActionResult<BusStopRouteDto> Get(int stopId, string time)
         {
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = BusScheduleService.GetNextTwoBusArrivalDataByTime(time);
+            List<BusStop> busStopsAndRoutes = _busScheduleService.GetNextTwoBusArrivalDataByTime(time);
             BusStop requestedStop = busStopsAndRoutes.Where(e => e.StopNumber == stopId).FirstOrDefault();
 
             List<BusRouteDto> busRoutes = new List<BusRouteDto>();

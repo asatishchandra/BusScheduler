@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BusScheduleApi.Hubs;
+using BusScheduleApi.SocketManager;
 using BusScheduleSevices.Interfaces;
 using BusScheduleSevices.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace BusScheduleApi
 {
@@ -35,12 +29,13 @@ namespace BusScheduleApi
                 options.AddPolicy("EnableCORS", builder =>
                 {
                     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build();
+                    //builder.WithOrigins("http://localhost:62673").AllowAnyHeader().AllowAnyMethod().Build();
                 });
             });
 
-            services.AddSignalR();
-
             services.AddScoped<IBusScheduleService, BusScheduleService>();
+
+            services.AddSingleton<ScheduleSocketManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,10 +57,12 @@ namespace BusScheduleApi
                 endpoints.MapControllers();
             });
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<RunningBusScheduleHub>("/schedule");
-            });
+            app.UseWebSockets();
+
+            //app.UseSignalR(routes =>
+            //{
+            //    routes.MapHub<RunningBusScheduleHub>("/schedule");
+            //});
         }
     }
 }
