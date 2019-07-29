@@ -1,9 +1,9 @@
-﻿import React from 'react';
+﻿import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
-class WebSocketHttp extends React.Component {
+class WebSocketHttp extends Component {
 
     constructor(props) {
         super(props);
@@ -17,7 +17,9 @@ class WebSocketHttp extends React.Component {
     }
 
     componentDidMount() {
-        let sock = this.state.socket;
+        //let sock = this.state.socket;
+        let sock = new SockJS(this.props.url);
+        debugger;
         sock.onopen = function () {
             debugger;
             console.log('open');

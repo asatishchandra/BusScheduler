@@ -4,9 +4,12 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
-import { Test } from './components/test';
+import { FullSchedule } from './components/FullSchedule';
+import { RouteScheduleByStop } from './components/RouteScheduleByStop';
 
 import './custom.css'
+//import './components/RouteScheduleByStop.js'
+
 var message = "";
 export default class App extends Component {
   static displayName = App.name;
@@ -17,7 +20,8 @@ render () {
             <Route exact path='/' component={Home} />
             <Route path='/counter' component={Counter} />
             <Route path='/fetch-data' component={FetchData} />
-            <Route path='/test' component={Test} />
+            <Route path='/full-schedule' component={FullSchedule} />
+            <Route path='/route-by-stop' component={RouteScheduleByStop} />
         </Layout>
     );
 }

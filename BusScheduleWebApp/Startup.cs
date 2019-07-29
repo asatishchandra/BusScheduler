@@ -23,6 +23,7 @@ namespace BusScheduleWebApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IBusScheduleService, BusScheduleService>();
+            services.AddScoped<IBusStopService, BusStopService>();
             services.AddSingleton<ScheduleSocketManager>();
             services.AddMvc(options => options.EnableEndpointRouting = false);
 

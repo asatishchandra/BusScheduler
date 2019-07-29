@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import WebSocketHttp from './WebSocketHttp';
-var message = "";
+
 export class FetchData extends Component {
   static displayName = FetchData.name;
 
@@ -45,21 +45,21 @@ export class FetchData extends Component {
 
       return (
           <div>
-              <WebSocketHttp url="http://localhost:62673/api/buses/3:01" />
+            <WebSocketHttp url="/api/buses/" />
             <h1>Weather forecast</h1>
             <p>This component demonstrates fetching data from the server.</p>
             {contents}
           </div>
     );
   }
-    onMessage(message) {
-        debugger;
-    }
+    //onMessage(message) {
+    //    debugger;
+    //}
 
-    sendMessage() {
-        let user = "web client"
-        this.refWebSocketHttp.sendMessage(message);
-    }
+    //sendMessage() {
+    //    let user = "web client"
+    //    this.refWebSocketHttp.sendMessage(message);
+    //}
 
     async populateWeatherData() {
         //const response1 = await fetch('http://localhost:62673/api/Buses/1/3:01');

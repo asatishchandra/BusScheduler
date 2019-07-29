@@ -40,9 +40,16 @@ namespace BusScheduleWebApp.Controllers
                 List<BusRouteDto> busRoutes = new List<BusRouteDto>();
                 foreach (KeyValuePair<BusRoute, List<string>> route in stop.StopSchedule)
                 {
-                    busRoutes.Add(new BusRouteDto { RouteName = route.Key.RouteName, Schedule = route.Value });
+                    busRoutes.Add(new BusRouteDto {
+                        RouteName = route.Key.RouteName,
+                        Schedule = route.Value
+                    });
                 }
-                dto.Add(new BusStopRouteDto { BusStop = stop.StopName, BusRoutes = busRoutes });
+                dto.Add(new BusStopRouteDto {
+                    BusStop = stop.StopName,
+                    BusStopNumber = stop.StopNumber,
+                    BusRoutes = busRoutes
+                });
             }
             return dto;
         }
@@ -81,27 +88,43 @@ namespace BusScheduleWebApp.Controllers
                 List<BusRouteDto> busRoutes = new List<BusRouteDto>();
                 foreach (KeyValuePair<BusRoute, List<string>> route in stop.StopSchedule)
                 {
-                    busRoutes.Add(new BusRouteDto { RouteName = route.Key.RouteName, Schedule = route.Value });
+                    busRoutes.Add(new BusRouteDto {
+                        RouteName = route.Key.RouteName,
+                        Schedule = route.Value
+                    });
                 }
-                dto.Add(new BusStopRouteDto { BusStop = stop.StopName, BusRoutes = busRoutes });
+                dto.Add(new BusStopRouteDto {
+                    BusStop = stop.StopName,
+                    BusStopNumber = stop.StopNumber,
+                    BusRoutes = busRoutes
+                });
             }
             return dto;
         }
 
         // GET api/buses/1/3:01
         [HttpGet("{stopId}/{time}")]
-        public ActionResult<BusStopRouteDto> Get(int stopId, string time)
+        public ActionResult<List<BusStopRouteDto>> Get(int stopId, string time)
         {
+            string timeNow = DateTime.Now.ToString("HH:mm");
             List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = _busScheduleService.GetNextTwoBusArrivalDataByTime(time);
+            List<BusStop> busStopsAndRoutes = _busScheduleService.GetNextTwoBusArrivalDataByTime(timeNow);
             BusStop requestedStop = busStopsAndRoutes.Where(e => e.StopNumber == stopId).FirstOrDefault();
 
             List<BusRouteDto> busRoutes = new List<BusRouteDto>();
             foreach (KeyValuePair<BusRoute, List<string>> route in requestedStop.StopSchedule)
             {
-                busRoutes.Add(new BusRouteDto { RouteName = route.Key.RouteName, Schedule = route.Value });
+                busRoutes.Add(new BusRouteDto {
+                    RouteName = route.Key.RouteName,
+                    Schedule = route.Value
+                });
             }
-            return new BusStopRouteDto { BusStop = requestedStop.StopName, BusRoutes = busRoutes };
+            dto.Add(new BusStopRouteDto {
+                BusStop = requestedStop.StopName,
+                BusStopNumber = requestedStop.StopNumber,
+                BusRoutes = busRoutes
+            });
+            return dto;
         }
 
         // POST api/buses

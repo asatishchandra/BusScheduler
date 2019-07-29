@@ -8,6 +8,7 @@ namespace BusScheduleWebApp.DTO
     public class BusStopRouteDto
     {
         public string BusStop { get; set; }
+        public int BusStopNumber { get; set; }
         public List<BusRouteDto> BusRoutes { get; set; }
     }
 

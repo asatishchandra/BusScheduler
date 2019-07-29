@@ -109,7 +109,7 @@ namespace BusScheduleSevices.Services
             Dictionary<BusRoute, List<string>> schedule = new Dictionary<BusRoute, List<string>>();
             foreach (BusRoute route in busRoutes)
             {
-                schedule.Add(route, new List<string> { startMinute.ToString(), (startMinute + _serviceGap).ToString() });
+                schedule.Add(route, new List<string> { string.Format("Arriving in {0} minutes", startMinute), string.Format("{0} minutes", startMinute + _serviceGap) });
                 if (startMinute + _distance > _serviceGap)
                     startMinute = startMinute + _distance - _serviceGap;
                 else
