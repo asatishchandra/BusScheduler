@@ -52,14 +52,14 @@ export class RouteScheduleByStop extends Component {
     }
 
     async getBusStops() {
-        const response = await fetch('/api/Stops');
+        const response = await fetch('http://localhost:62673/api/Stops');
         const data = await response.json();
         //debugger;
         this.setState({ stops: data });
     }
 
     async getFullSchedule() {
-        let url = "/api/Buses/" + this.state.selectedStopNumber + "/time/";
+        let url = "http://localhost:62673/api/Buses/" + this.state.selectedStopNumber + "/time/";
         //debugger;
         let response = await fetch(url);
         let data =  await response.json();

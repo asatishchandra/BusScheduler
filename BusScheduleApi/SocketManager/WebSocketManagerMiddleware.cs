@@ -6,39 +6,46 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BusScheduleWebApp.SocketManager
+namespace BusScheduleApi.SocketManager
 {
-    public class ScheduleSocketMiddleware
+    public class WebSocketManagerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ScheduleSocketManager _socketManager;
+        private WebSocketHandler _webSocketHandler { get; set; }
 
-        public ScheduleSocketMiddleware(RequestDelegate next,
-                                            ScheduleSocketManager socketManager)
+        public WebSocketManagerMiddleware(RequestDelegate next,
+                                          WebSocketHandler webSocketHandler)
         {
             _next = next;
-            _socketManager = socketManager;
+            _webSocketHandler = webSocketHandler;
         }
 
         public async Task Invoke(HttpContext context)
         {
             if (!context.WebSockets.IsWebSocketRequest)
-            {
-                await _next.Invoke(context);
                 return;
-            }
 
             var socket = await context.WebSockets.AcceptWebSocketAsync();
-            var id = _socketManager.AddSocket(socket);
+            await _webSocketHandler.OnConnected(socket);
 
             await Receive(socket, async (result, buffer) =>
             {
-                if (result.MessageType == WebSocketMessageType.Close)
+                if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    await _socketManager.RemoveSocket(id);
+                    await _webSocketHandler.ReceiveAsync(socket, result, buffer);
                     return;
                 }
+
+                else if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await _webSocketHandler.OnDisconnected(socket);
+                    return;
+                }
+
             });
+
+            //TODO - investigate the Kestrel exception thrown when this is the last middleware
+            //await _next.Invoke(context);
         }
 
         private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
@@ -48,7 +55,7 @@ namespace BusScheduleWebApp.SocketManager
             while (socket.State == WebSocketState.Open)
             {
                 var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
-                                                        cancellationToken: CancellationToken.None);
+                                                       cancellationToken: CancellationToken.None);
 
                 handleMessage(result, buffer);
             }

@@ -1,20 +1,17 @@
 ﻿import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 
 export class StopRouteInfoTableDisplay extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            fullSchedule: this.props.fullSchedule,
-            text: this.props.text
-        };
-    }
-
     render() {
+        const { text, fullSchedule } = this.props;
+
+        console.log('stop route info table', fullSchedule);
+
         return (
             <div>
-                <h1>{ this.props.text }</h1>
+                <h1>{ text }</h1>
                 <table className='table table-striped'>
                     <thead>
                         <tr>
@@ -23,7 +20,7 @@ export class StopRouteInfoTableDisplay extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.fullSchedule.map(stop =>
+                        {!fullSchedule ? 'foo bar' : fullSchedule.map(stop =>
                             <tr key={stop.busStop}>
                                 <td>{stop.busStop}</td>
                                 <td>
@@ -54,6 +51,12 @@ export class StopRouteInfoTableDisplay extends Component {
         );
     }
 }
+
+StopRouteInfoTableDisplay.propTypes = {
+    fullSchedule: PropTypes.array.isRequired,
+    text: PropTypes.string.isRequired
+};
+
 export default StopRouteInfoTableDisplay;
 
 

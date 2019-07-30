@@ -9,5 +9,6 @@ namespace BusScheduleSevices.Interfaces
     {
         List<BusStop> GetAllStopRouteData();
         List<BusStop> GetNextTwoBusArrivalDataByTime(string time);
+        BusStop GetNextTwoBusArrivalDataByStop(int stopId, string time);
     }
 }

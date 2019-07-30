@@ -2,6 +2,7 @@
 using BusScheduleSevices.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BusScheduleSevices.Services
@@ -37,14 +38,7 @@ namespace BusScheduleSevices.Services
             List<BusRoute> busRoutes = InitializeRoutes();
             List<BusStop> busStops = InitializeBusStops();
 
-            DateTime userCurrentTime = DateTime.Parse(time);
-            DateTime startTime = DateTime.Today.Add(TimeSpan.Parse(string.Format("{0}:00", userCurrentTime.Hour)));
-            while (DateTime.Compare(userCurrentTime, startTime) != -1)
-            {
-                startTime = startTime.AddMinutes(_serviceGap);
-            }
-            double startMinute = (startTime - userCurrentTime).TotalMinutes;
-
+            int startMinute = GetUserStartMinute(time);
             foreach (BusStop stop in busStops)
             {
                 stop.StopSchedule = GetNextTwoRouteSchduleByTime(busRoutes, startMinute);
@@ -54,6 +48,24 @@ namespace BusScheduleSevices.Services
                     startMinute += _distance;
             }
             return busStops;
+        }
+
+        public BusStop GetNextTwoBusArrivalDataByStop(int stopId, string time)
+        {
+            List<BusRoute> busRoutes = InitializeRoutes();
+            int count = 1;
+            int startMinute = GetUserStartMinute(time);
+
+            while (count < stopId)
+            {
+
+                if (startMinute + _distance > _serviceGap)
+                    startMinute = startMinute + _distance - _serviceGap;
+                else
+                    startMinute += _distance;
+                count++;
+            }
+            return new BusStop { StopName = string.Format("stop{0}", stopId), StopNumber = stopId, StopSchedule = GetNextTwoRouteSchduleByTime(busRoutes, startMinute) }; ;
         }
 
         #region private methods
@@ -104,12 +116,23 @@ namespace BusScheduleSevices.Services
             return timings;
         }
 
+        private int GetUserStartMinute(string time)
+        {
+            DateTime userCurrentTime = DateTime.Parse(time);
+            DateTime startTime = DateTime.Today.Add(TimeSpan.Parse(string.Format("{0}:00", userCurrentTime.Hour)));
+            while (DateTime.Compare(userCurrentTime, startTime) != -1)
+            {
+                startTime = startTime.AddMinutes(_serviceGap);
+            }
+            return Convert.ToInt32((startTime - userCurrentTime).TotalMinutes);
+        }
+
         private Dictionary<BusRoute, List<string>> GetNextTwoRouteSchduleByTime(List<BusRoute> busRoutes, double startMinute)
         {
             Dictionary<BusRoute, List<string>> schedule = new Dictionary<BusRoute, List<string>>();
             foreach (BusRoute route in busRoutes)
             {
-                schedule.Add(route, new List<string> { string.Format("Arriving in {0} minutes", startMinute), string.Format("{0} minutes", startMinute + _serviceGap) });
+                schedule.Add(route, new List<string> { string.Format("Arriving in: {0} minutes", startMinute), string.Format("{0} minutes", startMinute + _serviceGap) });
                 if (startMinute + _distance > _serviceGap)
                     startMinute = startMinute + _distance - _serviceGap;
                 else

@@ -28,7 +28,7 @@ export class FullSchedule extends Component {
     }
     
     async getFullSchedule() {
-        const response = await fetch('/api/Buses');
+        const response = await fetch('http://localhost:62673/api/Buses');
         const data = await response.json();
         this.setState({ fullSchedule: data, loading: false });
     }
