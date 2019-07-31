@@ -72,7 +72,6 @@ export class FetchData extends Component {
     componentWillUnmount() {
         this.onClose();
         console.log("unmount");
-        debugger;
     }
 
     render() {

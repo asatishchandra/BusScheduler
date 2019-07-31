@@ -9,11 +9,6 @@ namespace BusScheduleServicesTests
 {
     public class BusStopRouteTests
     {
-        private readonly int _routeCount = 3;
-        private readonly int _stopCount = 10;
-        private readonly int _distance = 2;
-        private readonly int _serviceGap = 15;
-
         [Fact]
         public void TestBusStopNameNumber()
         {
