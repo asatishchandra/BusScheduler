@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace BusScheduleApi.Handlers
 {
-    public class BusesMessageHandler : WebSocketHandler
+    public class BusesTimeHandler : WebSocketHandler
     {
-        public BusesMessageHandler(WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
+        public BusesTimeHandler(WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
         {
         }
-        //public override async Task OnConnected(WebSocket socket)
-        //{
-        //    await base.OnConnected(socket);
+        public override async Task OnConnected(WebSocket socket)
+        {
+            await base.OnConnected(socket);
 
-        //    var socketId = WebSocketConnectionManager.GetId(socket);
-        //    await SendMessageToAllAsync($"{socketId} is now connected");
-        //}
+            var socketId = WebSocketConnectionManager.GetId(socket);
+            await SendMessageToAllAsync($"{socketId} is now connected");
+        }
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {

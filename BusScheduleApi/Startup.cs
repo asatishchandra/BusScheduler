@@ -72,7 +72,9 @@ namespace BusScheduleApi
                 ReceiveBufferSize = 4 * 1024
             };
             app.UseWebSockets(webSocketOptions);
-            app.MapWebSocketManager("/ws", serviceProvider.GetService<BusesMessageHandler>());
+            app.MapWebSocketManager("/wsStop", serviceProvider.GetService<BusesStopHandler>());
+            app.MapWebSocketManager("/wsTime", serviceProvider.GetService<BusesTimeHandler>());
+            
         }
     }
 }

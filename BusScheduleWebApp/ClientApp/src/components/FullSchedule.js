@@ -6,7 +6,8 @@ export class FullSchedule extends Component {
     
     constructor(props) {
         super(props);
-        this.state = { fullSchedule: [], loading: true };
+        const apiUrl = "http://localhost:62673/api/Buses";
+        this.state = { fullSchedule: [], loading: true, apiUrl: apiUrl };
     }
 
     componentDidMount() {
@@ -29,7 +30,8 @@ export class FullSchedule extends Component {
     }
     
     async getFullSchedule() {
-        const response = await fetch('http://localhost:62673/api/Buses');
+        const { apiUrl } = this.state;
+        const response = await fetch(apiUrl);
         const data = await response.json();
         this.setState({ fullSchedule: data, loading: false });
     }

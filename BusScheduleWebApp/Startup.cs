@@ -1,6 +1,3 @@
-using BusScheduleWebApp.SocketManager;
-using BusScheduleSevices.Interfaces;
-using BusScheduleSevices.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -12,8 +9,6 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using BusScheduleWebApp.Handlers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -31,10 +26,6 @@ namespace BusScheduleWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddWebSocketManager();
-            services.AddScoped<IBusScheduleService, BusScheduleService>();
-            services.AddScoped<IBusStopService, BusStopService>();
-            services.AddSingleton<WebSocketConnectionManager>();
             services.AddMvc(options => options.EnableEndpointRouting = false);
             
             // In production, the React files will be served from this directory
@@ -61,14 +52,6 @@ namespace BusScheduleWebApp
                 app.UseExceptionHandler("/Error");
             }
 
-            var webSocketOptions = new WebSocketOptions
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(20),
-                ReceiveBufferSize = 4 * 1024
-            };
-            app.UseWebSockets(webSocketOptions);
-            app.MapWebSocketManager("/ws", serviceProvider.GetService<BusesMessageHandler>());
-            
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 

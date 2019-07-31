@@ -6,9 +6,7 @@ import { FullSchedule } from './components/FullSchedule';
 import { RouteScheduleByStop } from './components/RouteScheduleByStop';
 
 import './custom.css'
-//import './components/RouteScheduleByStop.js'
 
-var message = "";
 export default class App extends Component {
   static displayName = App.name;
   

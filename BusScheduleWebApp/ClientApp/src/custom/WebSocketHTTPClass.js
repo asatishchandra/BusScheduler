@@ -1,4 +1,4 @@
-﻿export class WebSocketHTTP {
+﻿export class WebSocketHTTPClass {
     constructor(uri) {
         this.uri = uri;
         this.socket = new WebSocket(uri);

@@ -52,7 +52,7 @@ namespace BusScheduleApi.SocketManager
         {
             var buffer = new byte[1024 * 4];
 
-            while (socket.State == WebSocketState.Open)
+            while (socket.State == WebSocketState.Open || socket.State == WebSocketState.CloseSent)
             {
                 var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
                                                        cancellationToken: CancellationToken.None);

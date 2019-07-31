@@ -1,25 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using BusScheduleSevices.Interfaces;
 using BusScheduleSevices.Models;
 using BusScheduleApi.DTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusScheduleApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StopsController : ControllerBase
+    public class BusStopsController : ControllerBase
     {
         private IBusStopService _busStopService { get; }
 
-        public StopsController(IBusStopService busStopService)
+        public BusStopsController(IBusStopService busStopService)
         {
             _busStopService = busStopService;
         }
+
         // GET: api/Stops
         [HttpGet]
         public ActionResult<IEnumerable<BusStopRouteDto>> Get()
