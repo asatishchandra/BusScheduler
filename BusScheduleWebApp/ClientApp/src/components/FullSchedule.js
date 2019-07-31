@@ -14,10 +14,11 @@ export class FullSchedule extends Component {
     }
 
     render() {
-        let contents = this.state.loading
+        const { fullSchedule, loading } = this.state;
+        let contents = loading
             ? <p><em>Loading...</em></p>
             : <StopRouteInfoTableDisplay
-                fullSchedule={this.state.fullSchedule}
+                fullSchedule={fullSchedule}
                 text="All stops and routes schedule" />
 
         return (
@@ -33,4 +34,3 @@ export class FullSchedule extends Component {
         this.setState({ fullSchedule: data, loading: false });
     }
 }
-

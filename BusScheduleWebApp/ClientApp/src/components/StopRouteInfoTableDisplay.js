@@ -6,9 +6,7 @@ export class StopRouteInfoTableDisplay extends Component {
 
     render() {
         const { text, fullSchedule } = this.props;
-
-        console.log('stop route info table', fullSchedule);
-
+        
         return (
             <div>
                 <h1>{ text }</h1>
@@ -40,8 +38,6 @@ export class StopRouteInfoTableDisplay extends Component {
                                             )}
                                         </tbody>
                                     </table>
-
-
                                 </td>
                             </tr>
                         )}

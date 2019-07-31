@@ -34,26 +34,33 @@ namespace BusScheduleApi.Controllers
         [EnableCors("EnableCORS")]
         public ActionResult<IEnumerable<BusStopRouteDto>> Get()
         {
-            List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            List<BusStop> busStopsAndRoutes = _busScheduleService.GetAllStopRouteData();
-            
-            foreach (BusStop stop in busStopsAndRoutes)
-            {
-                List<BusRouteDto> busRoutes = new List<BusRouteDto>();
-                foreach (KeyValuePair<BusRoute, List<string>> route in stop.StopSchedule)
+            try {
+                List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
+                List<BusStop> busStopsAndRoutes = _busScheduleService.GetAllStopRouteData();
+
+                foreach (BusStop stop in busStopsAndRoutes)
                 {
-                    busRoutes.Add(new BusRouteDto {
-                        RouteName = route.Key.RouteName,
-                        Schedule = route.Value
+                    List<BusRouteDto> busRoutes = new List<BusRouteDto>();
+                    foreach (KeyValuePair<BusRoute, List<string>> route in stop.StopSchedule)
+                    {
+                        busRoutes.Add(new BusRouteDto
+                        {
+                            RouteName = route.Key.RouteName,
+                            Schedule = route.Value
+                        });
+                    }
+                    dto.Add(new BusStopRouteDto
+                    {
+                        BusStop = stop.StopName,
+                        BusStopNumber = stop.StopNumber,
+                        BusRoutes = busRoutes
                     });
                 }
-                dto.Add(new BusStopRouteDto {
-                    BusStop = stop.StopName,
-                    BusStopNumber = stop.StopNumber,
-                    BusRoutes = busRoutes
-                });
+                return dto;
             }
-            return dto;
+            catch (Exception ex) {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         // GET api/buses/3:01
@@ -82,24 +89,33 @@ namespace BusScheduleApi.Controllers
         [EnableCors("EnableCORS")]
         public ActionResult<List<BusStopRouteDto>> Get(int stopId, string time)
         {
-            string timeNow = DateTime.Now.ToString("HH:mm");
-            List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
-            BusStop requestedStop = _busScheduleService.GetNextTwoBusArrivalDataByStop(stopId, timeNow);
-            
-            List<BusRouteDto> busRoutes = new List<BusRouteDto>();
-            foreach (KeyValuePair<BusRoute, List<string>> route in requestedStop.StopSchedule)
+            try
             {
-                busRoutes.Add(new BusRouteDto {
-                    RouteName = route.Key.RouteName,
-                    Schedule = route.Value
+                string timeNow = DateTime.Now.ToString("HH:mm");
+                List<BusStopRouteDto> dto = new List<BusStopRouteDto>();
+                BusStop requestedStop = _busScheduleService.GetNextTwoBusArrivalDataByStop(stopId, timeNow);
+
+                List<BusRouteDto> busRoutes = new List<BusRouteDto>();
+                foreach (KeyValuePair<BusRoute, List<string>> route in requestedStop.StopSchedule)
+                {
+                    busRoutes.Add(new BusRouteDto
+                    {
+                        RouteName = route.Key.RouteName,
+                        Schedule = route.Value
+                    });
+                }
+                dto.Add(new BusStopRouteDto
+                {
+                    BusStop = requestedStop.StopName,
+                    BusStopNumber = requestedStop.StopNumber,
+                    BusRoutes = busRoutes
                 });
+                return dto;
             }
-            dto.Add(new BusStopRouteDto {
-                BusStop = requestedStop.StopName,
-                BusStopNumber = requestedStop.StopNumber,
-                BusRoutes = busRoutes
-            });
-            return dto;
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         #region private methods

@@ -25,7 +25,8 @@ class WebSocketHttp extends Component {
     }
 
     async stopRouteDataByTime() {
-        await fetch(this.state.apiUrl);
+        const { apiUrl } = this.state;
+        await fetch(apiUrl);
         this.setState({ fullSchedule: [], loading: false });
     }
 

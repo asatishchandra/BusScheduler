@@ -65,11 +65,10 @@ namespace BusScheduleSevices.Services
                     startMinute += _distance;
                 count++;
             }
-            return new BusStop { StopName = string.Format("stop{0}", stopId), StopNumber = stopId, StopSchedule = GetNextTwoRouteSchduleByTime(busRoutes, startMinute) }; ;
+            return new BusStop { StopName = string.Format("Stop{0}", stopId), StopNumber = stopId, StopSchedule = GetNextTwoRouteSchduleByTime(busRoutes, startMinute) }; ;
         }
 
-        #region private methods
-        private List<BusRoute> InitializeRoutes()
+        public List<BusRoute> InitializeRoutes()
         {
             List<BusRoute> busRoutes = new List<BusRoute>();
             for (int i = 1; i <= _routeCount; i++)
@@ -80,7 +79,7 @@ namespace BusScheduleSevices.Services
             return busRoutes;
         }
 
-        private List<BusStop> InitializeBusStops()
+        public List<BusStop> InitializeBusStops()
         {
             List<BusStop> busStops = new List<BusStop>();
             for (int i = 1; i <= _stopCount; i++)
@@ -90,6 +89,8 @@ namespace BusScheduleSevices.Services
             }
             return busStops;
         }
+
+        #region private methods
 
         private Dictionary<BusRoute, List<string>> GetFullRouteSchduleByStop(List<BusRoute> busRoutes, DateTime startTime)
         {

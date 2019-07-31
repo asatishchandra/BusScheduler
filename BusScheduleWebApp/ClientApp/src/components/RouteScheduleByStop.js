@@ -19,17 +19,15 @@ export class RouteScheduleByStop extends Component {
     }
 
     render() {
-        let stops = this.state.stops;
-        //debugger;
+        const { stops, selectedStopNumber, fullSchedule } = this.state;
         let optionItems = stops.map((stop) =>
             <option key={stop.busStop} value={stop.busStopNumber}>{stop.busStop}</option>
         );
-
-        let dispText = "Routes for Stop" + this.state.selectedStopNumber;
+        let dispText = "Routes for Stop" + selectedStopNumber;
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
             : <StopRouteInfoTableDisplay
-                fullSchedule={this.state.fullSchedule}
+                fullSchedule={ fullSchedule }
                 text={dispText} />
 
         return (
@@ -54,16 +52,13 @@ export class RouteScheduleByStop extends Component {
     async getBusStops() {
         const response = await fetch('http://localhost:62673/api/Stops');
         const data = await response.json();
-        //debugger;
         this.setState({ stops: data });
     }
 
     async getFullSchedule() {
         let url = "http://localhost:62673/api/Buses/" + this.state.selectedStopNumber + "/time/";
-        //debugger;
         let response = await fetch(url);
         let data =  await response.json();
-        //debugger;
         this.setState({ fullSchedule: data, loading: false });
     }
 }
