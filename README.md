@@ -17,7 +17,7 @@ Local environement setup:
   1. Download and install the latest .NET Core 3.0 sdk.
   2. Download and install Node JS.
   3. Since Core 3.0 is still in preview mode, you have to enable preview mode of .NET Core in VS. For VS 2019 this option can be 
-    found under tools --> options --> Preview Features. For earlier versions it can be found under tools --> options --> Projects and         Solutions. Here check the checkbox "Use previews of .NET Core SDK". 
+    found under tools --> options --> Preview Features. For earlier versions it can be found under tools --> options --> Projects and Solutions. Here check the checkbox "Use previews of .NET Core SDK". 
   4. Restart VS.
     
 Local Build Instructions: 
