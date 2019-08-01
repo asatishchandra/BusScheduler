@@ -16,6 +16,7 @@ namespace BusScheduleApi.Controllers
     [ApiController]
     public class BusTimeSocketController : ControllerBase
     {
+        private readonly int _refershMinutes = 1;
         private IBusScheduleService _busScheduleService { get; }
         private BusesTimeHandler _busesTimeHandler { get; }
 
@@ -32,7 +33,7 @@ namespace BusScheduleApi.Controllers
         {
             try
             {
-                Timer _timer = new Timer(TimeSpan.FromSeconds(10).TotalMilliseconds);
+                Timer _timer = new Timer(TimeSpan.FromMinutes(_refershMinutes).TotalMilliseconds);
                 Helper.StopExistingTimers(_timer);
                 _timer.Elapsed += new ElapsedEventHandler(GetDtoAsync);
                 _timer.AutoReset = true;

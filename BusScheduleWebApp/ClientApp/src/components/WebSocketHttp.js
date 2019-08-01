@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import StopRouteInfoTableDisplay from './StopRouteInfoTableDisplay';
+import { WebSocketHTTPClass } from '../custom/WebSocketHTTPClass';
 
 export class WebSocketHttp extends Component {
 
@@ -21,12 +22,11 @@ export class WebSocketHttp extends Component {
             isSocketOpen: true,
             dispText: dispText
         };
-        //debugger;
     }
 
     componentDidMount() {
         this.connect();
-        this.stopRouteDataByTime();
+        this.stopRouteData();
     }
 
     connect() {
@@ -37,18 +37,17 @@ export class WebSocketHttp extends Component {
         socket.onerror = this.onError
     }
 
-    async stopRouteDataByTime() {
+    async stopRouteData() {
+        console.log("stopRouteData");
         const { apiUrl } = this.state;
         await fetch(apiUrl);
-        this.setState({ fullSchedule: [], loading: false });
-        //debugger;
+        this.setState({ loading: false });
     }
 
     handleClick = () => {
-        //const { isSocketOpen } = this.state;
-        this.onClose();
-        //isSocketOpen ? this.onClose() : this.onOpen();
-        //this.setState({ isSocketOpen: !isSocketOpen });
+        const { isSocketOpen } = this.state;
+        isSocketOpen ? this.onClose() : this.onOpen();
+        this.setState({ isSocketOpen: !isSocketOpen });
     }
 
     onClose = () => {
@@ -60,10 +59,12 @@ export class WebSocketHttp extends Component {
     onOpen = () => {
         const { wsUrl, isSocketOpen } = this.state;
         if (!isSocketOpen) {
-            this.setState({ isSocketOpen: true });
-            this.connect();
-            this.stopRouteDataByTime();
-            console.log("opened connection to " + wsUrl);
+            const webSocket = new WebSocketHTTPClass(wsUrl);
+            this.setState({ socket: webSocket.Socket }, () => {
+                this.connect();
+                this.stopRouteData();
+                console.log("opened connection to " + wsUrl);
+            });
         }
     }
 
@@ -79,16 +80,17 @@ export class WebSocketHttp extends Component {
     }
 
     render() {
-        const { fullSchedule, loading, dispText } = this.state;
+        const { fullSchedule, loading, dispText, isSocketOpen } = this.state;
         let contents = loading
             ? <p><em>Loading...</em></p>
             : <StopRouteInfoTableDisplay
                 fullSchedule={ fullSchedule }
-                text={ dispText } />
+                text={dispText} />
+        let buttonText = isSocketOpen ? 'Close Socket' : 'Open Socket';
         return (
             <div>
                 <button onClick={this.handleClick}>
-                    {'Close Socket'}
+                    {buttonText}
                 </button>
                 { contents }
             </div>

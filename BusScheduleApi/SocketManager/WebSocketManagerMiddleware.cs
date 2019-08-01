@@ -43,9 +43,6 @@ namespace BusScheduleApi.SocketManager
                 }
 
             });
-
-            //TODO - investigate the Kestrel exception thrown when this is the last middleware
-            //await _next.Invoke(context);
         }
 
         private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)

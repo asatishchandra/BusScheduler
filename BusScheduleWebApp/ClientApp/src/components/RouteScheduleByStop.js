@@ -8,7 +8,7 @@ export class RouteScheduleByStop extends Component {
         super(props);
         const stopsApiUrl = "http://localhost:62673/api/BusStops";
         const wsApiUrl = "http://localhost:62673/api/BusStopSocket/";
-        const initApiUrl = "http://localhost:62673/api/Buses/1/time";
+        const initApiUrl = "http://localhost:62673/api/Buses/";
         const wsUrl = "ws://localhost:62673/wsStop";
         const webSocket = new WebSocketHTTPClass(wsUrl);
         this.state = {
@@ -30,18 +30,6 @@ export class RouteScheduleByStop extends Component {
         this.getFullSchedule();
     }
 
-    handleChange = (event) => {
-        this.setState({ selectedStopNumber: event.target.value }, () => {
-            const { wsUrl } = this.state;
-            const webSocket = new WebSocketHTTPClass(wsUrl);
-            this.setState({ socket: webSocket.Socket });
-            this.setState({ loading: true });
-            this.getFullSchedule();
-            this.refWebSocketHttp.stopRouteDataByTime();
-            console.log("handleChange");
-        });
-    }
-
     async getBusStops() {
         const { stopsApiUrl } = this.state;
         const response = await fetch(stopsApiUrl);
@@ -50,11 +38,27 @@ export class RouteScheduleByStop extends Component {
     }
 
     async getFullSchedule() {
-        const { initApiUrl } = this.state;
-        let response = await fetch(initApiUrl);
+        const { initApiUrl, selectedStopNumber } = this.state;
+        let apiUrl = initApiUrl + selectedStopNumber + "/time";
+        console.log(apiUrl);
+        let response = await fetch(apiUrl);
         let data = await response.json();
         this.setState({ fullSchedule: data, loading: false }, () => {
             console.log(this.state.fullSchedule);
+        });
+    }
+
+    handleChange = (event) => {
+        const { wsUrl } = this.state;
+        const webSocket = new WebSocketHTTPClass(wsUrl);
+        this.setState({ selectedStopNumber: event.target.value }, () => {
+            this.setState({
+                socket: webSocket.Socket,
+                loading: true
+            });
+            this.getFullSchedule();
+            this.refWebSocketHttp.stopRouteData();
+            console.log("handleChange");
         });
     }
 
