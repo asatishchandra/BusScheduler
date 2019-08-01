@@ -78,54 +78,13 @@ export class WebSocketHttp extends Component {
         console.log("error: " + evt.data);
     }
 
-    dispTable() {
-        const { fullSchedule, dispText } = this.state;
-        return (
-            <div>
-                <h1>{dispText}</h1>
-                <table className='table table-striped'>
-                    <thead>
-                        <tr>
-                            <th>Stop</th>
-                            <th>Route Schedule</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {fullSchedule.map(stop =>
-                            <tr key={stop.busStop}>
-                                <td>{stop.busStop}</td>
-                                <td>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Route</th>
-                                                <th>Schedule</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {stop.busRoutes.map(routeInfo =>
-                                                <tr key={routeInfo.routeName}>
-                                                    <td>{routeInfo.routeName}</td>
-                                                    <td>{routeInfo.schedule.join(", ")}</td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        );
-        
-    }
-
     render() {
         const { fullSchedule, loading, dispText } = this.state;
         let contents = loading
             ? <p><em>Loading...</em></p>
-            : this.dispTable()
+            : <StopRouteInfoTableDisplay
+                fullSchedule={ fullSchedule }
+                text={ dispText } />
         return (
             <div>
                 <button onClick={this.handleClick}>

@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 export class StopRouteInfoTableDisplay extends Component {
 
     render() {
-        debugger;
         const { text, fullSchedule } = this.props;
         
         return (
