@@ -1,8 +1,9 @@
 # BusScheduler
-Project Description: BusScheduler is a ReactJS web application. All the API's and services are built in .NET Core 3.0 framework.
-The application uses CORS (Cross Origin Resouce Sharing) for all the communication between the Web Application and the API. The reason 
-for using CORS is the WebApp and the API run locally on different ports, with out CORS it would not be possible to make REST API calls 
-across different ports.The application also uses Websockets to display updated bus arrival times for a selected bus stop. 
+Project Description: 
+  BusScheduler is a ReactJS web application. All the API's and services are built in .NET Core 3.0 framework.
+  The application uses CORS (Cross Origin Resouce Sharing) for all the communication between the Web Application and the API. The reason 
+  for using CORS is the WebApp and the API run locally on different ports, with out CORS it would not be possible to make REST API calls 
+  across different ports.The application also uses Websockets to display updated bus arrival times for a selected bus stop. 
 
 Pre-Requisites:
   .NET Core 3.0
